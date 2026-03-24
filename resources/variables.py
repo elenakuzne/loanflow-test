@@ -1,0 +1,7 @@
+# Constraints from the OpenAPI spec
+MIN_LOAN_AMOUNT = 1000
+MAX_LOAN_AMOUNT = 500_000
+
+# Thresholds from the architecture doc
+UNEMPLOYED_REJECTION_THRESHOLD = 10_000
+DUPLICATE_WINDOW_SECONDS = 60

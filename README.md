@@ -2,6 +2,9 @@
 
 Robot Framework + Python test suite for the LoanFlow Application API.
 
+Click here for
+[Part 1 — Test Analysis & Strategy](https://github.com/elenakuzne/loanflow-test/blob/4dc7d4f4a1333bf46ed69333b2694e4529cad038/Part%201%20%E2%80%94%20Test%20Analysis%20%26%20Strategy.pdf)
+
 ## Structure
 
 ```

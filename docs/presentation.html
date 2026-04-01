@@ -1,0 +1,465 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Robot Framework — Team Presentation · LoanFlow</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reset.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/white.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/github.min.css" />
+  <style>
+    .reveal { font-size: 28px; }
+    .reveal h1 { font-size: 2em; }
+    .reveal h2 { font-size: 1.3em; }
+    .reveal ul { text-align: left; }
+    .reveal ul li { margin-bottom: 0.35em; font-size: 0.85em; }
+    .reveal .subtitle { font-size: 1em; opacity: 0.6; }
+    .reveal .tag {
+      display: inline-block;
+      background: #e8f4fd;
+      border: 1px solid #90caf9;
+      border-radius: 4px;
+      padding: 0.1em 0.5em;
+      font-size: 0.78em;
+      margin: 0.1em;
+      color: #1565c0;
+    }
+    .reveal pre { box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .reveal pre code { font-size: 0.68em; }
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5em; text-align: left; }
+    .reveal .callout {
+      background: #f0f7ff;
+      border-left: 4px solid #1976d2;
+      padding: 0.35em 0.8em;
+      border-radius: 0 6px 6px 0;
+      margin-top: 0.5em;
+      font-size: 0.78em;
+      color: #1a237e;
+    }
+  </style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+
+  <!-- 1: Title -->
+  <section>
+    <div style="display:grid;grid-template-columns:1fr auto;gap:1.5em;align-items:center;">
+      <div style="text-align:left;">
+        <h1 style="margin:0;">Robot Framework</h1>
+        <p class="subtitle" style="margin:0.3em 0 0.8em;">Testing Without a Dedicated QA Team</p>
+        <p style="margin:0;"><em>Team Knowledge-Sharing Session</em></p>
+        <p style="margin:0.8em 0 0; font-size:0.78em; opacity:0.7;">
+          No dedicated QA team? No Problem!
+          This session shows how Robot Framework allows developers
+          to own automated testing — from readable test cases to CI enforcement —
+          without needing a specialist.
+        </p>
+      </div>
+      <img src="robot.png" alt="Robot Framework logo"
+           style="height:220px;border:none;box-shadow:none;border-radius:12px;" />
+    </div>
+  </section>
+
+  <!-- 2: Meme -->
+  <section>
+    <p style="font-size:0.85em;opacity:0.65;margin-bottom:0.4em;">Manual regression testing on every sprint 👇</p>
+    <img src="https://media2.giphy.com/media/pME4LIoXw9kKQ/giphy.gif"
+         alt="Industrial robot arms working in perfect sync — let the robots handle it"
+         style="max-height:420px;border:none;box-shadow:none;border-radius:8px;" />
+    <p style="font-size:1em;margin-top:0.5em;">
+      <strong>Let the robots handle it.</strong>
+      <span style="opacity:0.6;font-size:0.85em;"> So your team can focus on what really matters.</span>
+    </p>
+  </section>
+
+  <!-- 3: Why Robot? -->
+  <section data-auto-animate>
+    <h2 data-id="h-why-robot">Why Robot Framework?</h2>
+    <div style="display:grid;grid-template-columns:1.1fr 1fr;gap:1.2em;align-items:start;">
+      <div>
+        <ul>
+          <li>Tests written in <strong>keyword-driven, human-readable syntax</strong> — plain language, not scripts</li>
+          <li>Different steps like <code>Post Application</code> or <code>Response Status Should Be</code> are maped to Python keywords under the hood</li>
+          <li>No test-tool expertise needed to read results — anyone in the team can follow along</li>
+          <li>Produces clear <strong>HTML reports &amp; logs</strong> after every run</li>
+          <li>Easy to <strong>maintain and reuse</strong> across acceptance, integration and regression suites</li>
+        </ul>
+      </div>
+      <img src="test-results.gif" alt="Tests running in VS Code"
+           style="width:100%;border:1px solid #e0e0e0;border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,0.1);" />
+    </div>
+  </section>
+
+  <!-- 3: Why Robot — in code -->
+  <section data-auto-animate>
+    <h2 data-id="h-why-robot">Why Robot Framework? <span style="font-size:0.65em; opacity:0.6;">— in code</span></h2>
+    <pre><code class="language-robot" data-trim>
+*** Test Cases ***                             NAME              INCOME  AMOUNT  EMPLOYMENT   STATUS
+Approve strong application                     Approve Case      90000   20000   employed     approved
+Queue borderline for manual review             Review Case       60000   20000   employed     pending
+Reject low income application                  Low Score Case    30000   20000   employed     rejected
+Reject unemployed applicant with high amount   Unemployed Case   50000   15000   unemployed   rejected
+    </code></pre>
+    <div class="callout">
+      Test names <em>are</em> the requirements. Add a new scenario by adding a row — no new code.
+    </div>
+  </section>
+
+  <!-- 3b: Test decomposition -->
+  <section>
+    <h2>How I Decomposed the Problem</h2>
+    <p style="font-size:0.78em; margin-bottom:0.7em; opacity:0.85;">Starting from the API spec, I asked: <em>where can this go wrong?</em></p>
+    <table style="font-size:0.72em; width:100%; border-collapse:collapse; text-align:left;">
+      <thead>
+        <tr style="background:#2a5caa; color:#fff;">
+          <th style="padding:0.45em 0.7em;">Risk Area</th>
+          <th style="padding:0.45em 0.7em;">What I tested</th>
+          <th style="padding:0.45em 0.7em; text-align:center;">Scenarios</th>
+          <th style="padding:0.45em 0.7em;">Tag</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="background:#f4f7fc;">
+          <td style="padding:0.45em 0.7em;"><strong>Decision logic</strong></td>
+          <td style="padding:0.45em 0.7em;">approve / pending / reject (income &amp; employment)</td>
+          <td style="padding:0.45em 0.7em; text-align:center;">4</td>
+          <td style="padding:0.45em 0.7em;"><span class="tag">regression</span></td>
+        </tr>
+        <tr>
+          <td style="padding:0.45em 0.7em;"><strong>Input validation</strong></td>
+          <td style="padding:0.45em 0.7em;">incorrect loan amount, unsupported employment status</td>
+          <td style="padding:0.45em 0.7em; text-align:center;">2</td>
+          <td style="padding:0.45em 0.7em;"><span class="tag">validation</span></td>
+        </tr>
+        <tr style="background:#f4f7fc;">
+          <td style="padding:0.45em 0.7em;"><strong>Resilience</strong></td>
+          <td style="padding:0.45em 0.7em;">Risk Engine timeout, Risk Engine unavailable</td>
+          <td style="padding:0.45em 0.7em; text-align:center;">2</td>
+          <td style="padding:0.45em 0.7em;"><span class="tag">resilience</span></td>
+        </tr>
+        <tr>
+          <td style="padding:0.45em 0.7em;"><strong>API contract</strong></td>
+          <td style="padding:0.45em 0.7em;">idempotency, retrieval by ID, status filtering</td>
+          <td style="padding:0.45em 0.7em; text-align:center;">2</td>
+          <td style="padding:0.45em 0.7em;"><span class="tag">smoke</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="callout" style="margin-top:0.8em;">
+      Each row is a different <em>failure mode</em>, not just a different input value — that's risk-based thinking.
+    </div>
+  </section>
+
+  <!-- 4: How tests work -->
+  <section>
+    <h2>How Robot Framework Tests Work</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2em;align-items:start;">
+      <div>
+        <ul>
+          <li>Tests are grouped into <strong>test suites</strong> and backed by keyword libraries</li>
+          <li>The engine runs each test <strong>step by step</strong>, compares actual vs. expected results</li>
+          <li>Generates <code>log.html</code> and <code>report.html</code> for quick analysis after every run</li>
+          <li>Syntax is close to <strong>natural language</strong> — developers, POs, BAs and managers can read it</li>
+        </ul>
+        <div class="callout">
+          This is a big advantage for <em>all</em> participants of the process.
+        </div>
+      </div>
+      <pre style="margin:0;"><code class="language-robot" data-trim>
+# resources/api.resource
+
+*** Settings ***
+Library    RequestsLibrary
+Library    ../libraries/LoanFlowLibrary.py
+
+*** Keywords ***
+Start Test Environment
+    ${base_url}=    Start Loanflow Api
+    Set Suite Variable    ${BASE_URL}    ${base_url}
+    Create Session    loanflow    ${base_url}
+
+Post Application
+    [Arguments]    ${payload}
+    ${response}=    POST On Session
+    ...    loanflow    /api/v1/applications
+    ...    json=${payload}    expected_status=anything
+    RETURN    ${response}
+
+Response Status Should Be
+    [Arguments]    ${response}    ${expected}
+    Should Be Equal As Integers
+    ...    ${response.status_code}    ${expected}
+      </code></pre>
+    </div>
+  </section>
+
+  <!-- 5: How developers contribute -->
+  <section>
+    <h2>How Developers Can Contribute</h2>
+    <p style="font-size:0.8em; opacity:0.65;">Even without a dedicated QA team:</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2em;align-items:start;">
+      <div>
+        <ul>
+          <li>
+            <strong>Write &amp; refine keywords and libraries</strong> — high-level tests stay readable,
+            low-level logic stays robust and reusable
+          </li>
+          <li>
+            <strong>Implement acceptance &amp; integration tests</strong> from user stories,
+            shifting QA work into the development workflow
+            <span style="font-size:0.8em; opacity:0.65;">(impacts DoR &amp; US process)</span>
+          </li>
+          <li>
+            <strong>Own CI/CD failures</strong> — investigate Robot failures, fix bugs
+            and improve test stability in place
+          </li>
+        </ul>
+        <div class="callout">
+          The team collectively owns both <em>building features</em> and <em>proving they work</em>.
+        </div>
+      </div>
+      <pre style="margin:0;"><code class="language-plaintext" data-trim>
+loanflow-test/
+├── tests/
+│   ├── application_outcomes.robot   ← test suites
+│   └── application_api.robot
+├── resources/
+│   ├── api.resource                 ← Robot keywords
+│   └── variables.py
+├── libraries/
+│   └── LoanFlowLibrary.py           ← Python bridge
+│                                      (developers own this)
+└── src/
+    ├── loanflow_mock/
+    │   ├── app.py                   ← API under test
+    │   └── state.py
+    └── risk_engine_mock/
+        └── app.py                   ← mock service
+      </code></pre>
+    </div>
+  </section>
+
+  <!-- 6: Best Practices -->
+  <section>
+    <h2>Best Practices</h2>
+    <p style="font-size:0.78em; opacity:0.65; margin:0 0 0.5em;">Good Robot tests are clear, independent, and easy to maintain.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5em;align-items:center;">
+      <ul style="font-size:0.75em;">
+        <li><strong>1. One test, one thing</strong> — <span style="opacity:0.75;">verify a single behavior; too long? split it</span></li>
+        <li><strong>2. Descriptive names</strong> — <span style="opacity:0.75;"><code>Reject Low Income Application</code> &gt; <code>Test01</code>; applies to keywords &amp; variables too</span></li>
+        <li><strong>3. Domain-language keywords</strong> — <span style="opacity:0.75;"><code>Post Application</code> — declarative, ≤ 10 steps; live in resource files</span></li>
+        <li><strong>4. Independent tests + setup/teardown</strong> — <span style="opacity:0.75;">run in any order; use teardown for shared preconditions (DB reset, session)</span></li>
+        <li><strong>5. Tags &amp; suite docs</strong> — <span class="tag">smoke</span> <span class="tag">regression</span> <span class="tag">api</span> <span style="opacity:0.75;">— run subsets; add <code>Documentation</code> to suites to explain coverage</span></li>
+        <li><strong>6. Data-driven tests</strong> — <span style="opacity:0.75;">same logic across multiple inputs</span></li>
+        <li><strong>7. Follow the pyramid</strong> — <span style="opacity:0.75;">more unit/API, fewer E2E; Robot for acceptance &amp; integration flows, complex logic in Python libs</span></li>
+      </ul>
+      <img src="https://martinfowler.com/bliki/images/testPyramid/test-pyramid.png"
+           alt="Test automation pyramid"
+           style="max-height:280px;border:none;box-shadow:none;" />
+    </div>
+  </section>
+
+  <!-- 7: Example test case -->
+  <section>
+    <h2>Example Test Case</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2em;align-items:start;">
+      <pre style="margin:0;"><code class="language-robot" data-trim>
+Reject a request that violates
+validation rules
+    [Tags]    negative    validation    api
+    ${payload}=    Build Application Payload
+    ...    applicant_name=Validation Case
+    ...    annual_income=45000
+    ...    requested_amount=${MIN_LOAN_AMOUNT - 1}
+    ...    employment_status=employed
+    ${response}=    Post Application    ${payload}
+    Response Status Should Be    ${response}    400
+    ${body}=    Response Json    ${response}
+    Dictionary Should Contain Item
+    ...    ${body}    error_code    VALIDATION_ERROR
+      </code></pre>
+      <div>
+        <ul style="margin-bottom:0.6em;">
+          <li><code>[Tags]</code> — <span class="tag">negative</span> <span class="tag">validation</span> <span class="tag">api</span> — runnable as a subset</li>
+          <li><code>Build Application Payload</code> / <code>Post Application</code> — reusable keywords from <code>api.resource</code></li>
+          <li><code>${MIN_LOAN_AMOUNT - 1}</code> — variables keep tests data-driven</li>
+          <li><code>Response Status Should Be 400</code> — reads like the acceptance criterion</li>
+        </ul>
+        <img src="test-result.png" alt="Test results"
+             style="width:100%;border:1px solid #e0e0e0;border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,0.1);" />
+      </div>
+    </div>
+  </section>
+
+  <!-- Meme: no tests no failures -->
+  <section data-auto-animate>
+    <h2 data-id="h-why-not-manual">Why Not Just Test Manually?</h2>
+    <img src="https://letmetrysoftwaretesting.wordpress.com/wp-content/uploads/2018/12/tests.png"
+         alt="Tests won't fail if you don't write tests"
+         style="max-height:460px;border:none;box-shadow:none;border-radius:8px;" />
+  </section>
+
+  <!-- 8: Why not manual? -->
+  <section data-auto-animate>
+    <h2 data-id="h-why-not-manual">Why Not Just Test Manually?</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2em;align-items:start;">
+      <div>
+        <ul>
+          <li><strong>Repeatability</strong> — a human runs checks differently each time; a script runs them identically every build</li>
+          <li><strong>Speed</strong> — the full suite runs in CI in minutes; manual regression across 20+ scenarios takes hours</li>
+          <li><strong>No regression drift</strong> — automated tests catch breakage in old features the moment new code lands</li>
+          <li><strong>Living documentation</strong> — test names like <em>Reject unemployed applicant with high amount</em> describe the rules without a separate spec document</li>
+        </ul>
+        <div class="callout">
+          Manual testing still has a place — exploratory, UX, edge cases. Automation covers the boring repetitive part.
+        </div>
+      </div>
+      <pre style="margin:0;"><code class="language-robot" data-trim>
+# tests/application_outcomes.robot
+*** Settings ***
+Test Template    Application Decision Should Be
+
+*** Test Cases ***
+...                           NAME          INCOME  AMOUNT  STATUS
+Approve strong application    Approve       90000   20000   approved
+Queue borderline for review   Review        60000   20000   pending
+Reject low income             Low Score     30000   20000   rejected
+Reject unemployed high amt    Unemployed    50000   15000   rejected
+
+# one template keyword → four independent tests
+# add a new scenario: add one row, zero new code
+      </code></pre>
+    </div>
+  </section>
+
+  <!-- Meme: specs were incomplete -->
+  <section data-auto-animate>
+    <h2 data-id="h-mocking">Mocking Strategy</h2>
+    <img src="https://miro.medium.com/v2/resize:fit:1100/format:webp/0*P0b8NK9d-B4cj44-.png"
+         alt="Specs were incomplete so we made some assumptions — unexpected results"
+         style="max-height:460px;border:none;box-shadow:none;border-radius:8px;" />
+  </section>
+
+  <!-- 9: Mocking strategy -->
+  <section data-auto-animate>
+    <h2 data-id="h-mocking">Mocking Strategy</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2em;align-items:start;">
+      <div>
+        <ul>
+          <li><strong>The problem</strong> — the Risk Engine is an external service; tests can't rely on it</li>
+          <li><strong>The solution</strong> — a lightweight fake Risk Engine spun up per suite (<code>Start Test Environment</code> / <code>Stop Test Environment</code>)</li>
+          <li><strong>What it enables</strong> — tests for timeout (<code>Configure Risk Engine Delay 6</code>), unavailability (<code>Stop Risk Engine</code>), and happy paths — all deterministic</li>
+          <li><strong>"What if the mock doesn't match production?"</strong> — the mock is kept minimal and contract-based; any drift shows up in integration testing against the real service</li>
+        </ul>
+        <div class="callout">
+          Mocks make edge cases <em>testable</em>. Without them, a 503 scenario requires deliberately breaking production.
+        </div>
+      </div>
+      <pre style="margin:0;"><code class="language-python" data-trim>
+# src/risk_engine_mock/app.py
+
+@app.post("/configure")
+async def configure(body: dict):
+    app.state.delay = float(body.get("delay", 0))
+    return {"status": "ok"}
+
+@app.post("/score")
+async def score(request: ScoreRequest):
+    if app.state.delay &gt; 0:
+        await sleep(app.state.delay)  # simulate timeout
+    ratio = (request.annual_income
+             / request.requested_amount)
+    if ratio &gt;= 4.0:
+        return ScoreResponse(score=82)  # → approved
+    if ratio &gt;= 2.0:
+        return ScoreResponse(score=55)  # → pending
+    return ScoreResponse(score=18)      # → rejected
+      </code></pre>
+    </div>
+  </section>
+
+  <!-- 10: CI/CD -->
+  <section>
+    <h2>CI / CD Integration</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2em;align-items:center;">
+      <div>
+        <ul>
+          <li><strong>Tests run on every push</strong> — triggered automatically; no manual step needed</li>
+          <li><strong>Tag-based subsets</strong> — PR pipelines run <span class="tag">smoke</span> only; nightly runs the full <span class="tag">regression</span> suite</li>
+          <li><strong>Failure = blocked merge</strong> — a failing Robot test stops the PR, same as a failing unit test</li>
+          <li><strong>Artefacts published</strong> — anyone can open <code>report.html</code> and inspect what failed and why</li>
+        </ul>
+        <div class="callout">
+          Quality is enforced in the pipeline — not in a separate QA phase at the end of the sprint.
+        </div>
+        <div class="callout" style="margin-top:0.5em; border-left-color:#e8a000; background:#fffbf0;">
+          <strong>⚡ "This looks like overhead."</strong> Setup: ~1 day for a keyword library. Each new story: minutes. The first regression you catch in CI — not in production — pays that back.
+        </div>
+      </div>
+      <img src="test-report.png" alt="Robot Framework test report"
+           style="width:100%;border:1px solid #e0e0e0;border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,0.1);" />
+    </div>
+  </section>
+
+  <!-- 11: Summary -->
+  <section>
+    <h2>Summary</h2>
+    <div class="two-col">
+      <div>
+        <p><strong>Robot Framework gives you</strong></p>
+        <ul>
+          <li>Human-readable tests</li>
+          <li>Reusable keyword libraries</li>
+          <li>Clear HTML reports</li>
+          <li>Easy CI/CD integration</li>
+        </ul>
+      </div>
+      <div>
+        <p><strong>Your team gains</strong></p>
+        <ul>
+          <li>Shared ownership of quality</li>
+          <li>Tests as living documentation</li>
+          <li>Faster feedback loops</li>
+          <li>Less dependency on QA specialists</li>
+        </ul>
+      </div>
+    </div>
+    <div class="callout" style="margin-top:1em;">
+      Start small — one keyword library, one acceptance test per user story.
+    </div>
+    <div style="margin-top:0.9em; font-size:0.75em; opacity:0.85;">
+      <strong>If I had more time:</strong>
+      contract tests to validate the mock against the real Risk Engine &nbsp;·&nbsp;
+      mutation testing to verify scenarios catch real bugs &nbsp;·&nbsp;
+      performance benchmarks on timeout handling against SLA
+    </div>
+  </section>
+
+  <!-- 12: Questions -->
+  <section>
+    <h2>Thank you!</h2>
+    <p style="font-size: 1.3em;">😃</p>
+    <br />
+    <p style="font-size:0.75em; opacity:0.5;">
+      <a href="https://robotframework.org" target="_blank">robotframework.org</a>
+    </p>
+  </section>
+
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+<script>
+  Reveal.initialize({
+    hash: true,
+    slideNumber: 'c/t',
+    transition: 'slide',
+    plugins: [ RevealHighlight, RevealNotes ]
+  });
+</script>
+</body>
+</html>
